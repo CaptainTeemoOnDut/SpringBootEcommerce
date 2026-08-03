@@ -1,0 +1,66 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /chat
+spring:
+
+  application:
+    name: chat-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/mydb
+      auto-index-creation: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vector_db
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+
+  # 🔵 PostgreSQL riêng cho VECTOR
+  ai:
+    openai:
+      api-key: ${GEMINI_KEY}
+      chat:
+        #base-url: https://generativelanguage.googleapis.com
+        #base-url: https://generativelanguage.googleapis.com/v1beta
+        base-url: https://generativelanguage.googleapis.com/v1beta/openai
+        #completions-path: /v1beta/openai/chat/completions
+        #completions-path: /openai/chat/completions
+        #completions-path: /chat/completions
+        options:
+          model: gemini-2.5-flash-lite
+          #model: gemini-1.5-flash
+
+      embedding:
+        #base-url: https://generativelanguage.googleapis.com
+        #base-url: https://generativelanguage.googleapis.com/v1beta
+        base-url: https://generativelanguage.googleapis.com/v1beta/openai
+        #embeddings-path: /openai/embeddings
+        #embeddings-path: /embeddings
+        embeddings-path: /embeddings
+        options:
+          model: gemini-embedding-001
+
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE
+        dimensions: 768
+        table-name: vector_store
+        initialize-schema: true
+        datasource:
+          url: jdbc:postgresql://localhost:5432/vector_db
+          username: postgres
+          password: 123456
+          driver-class-name: org.postgresql.Driver
+logging:
+  level:
+    org.springframework.ai.openai: DEBUG
+    org.springframework.web.client: DEBUG
+app:
+  services:
+    profile:
+      url: http://localhost:8443/identity
+    identity:
+      url: http://localhost:8443/identity

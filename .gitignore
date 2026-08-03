@@ -1,0 +1,9 @@
+.idea/
+.vscode/
+**/target/
+**/build/
+**/mysql_data/
+*.sock
+**.log
+**.class
+.env
