@@ -1,0 +1,70 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /identity
+
+spring:
+
+  datasource:
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/full-stack-ecommerce?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    password: ${DBMS_PASSWORD:springstudent}
+    username: ${DBMS_USERNAME:springstudent}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+
+
+  flyway:
+    enabled: false
+
+  liquibase:
+    enabled: false
+
+  data:
+    redis:
+      url: redis://localhost:6379
+
+google:
+  client-id: "403856941335-r271t6gtu3o8gg67mp9cemu3m7hkrtl5.apps.googleusercontent.com"
+  client-secret: "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"
+  redirect-uri: "http://localhost:4200/authenticate"
+
+jwt:
+  signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  valid-duration: 60 # in second
+  refreshable-duration: 36000 # in second
+
+cloudinary:
+  cloud_name: "dpskojq8d"
+  api_key: "536218529843189"
+  api_secret: "abFvtP9PeE9oYqG_JrrHp4PbU74"
+
+logging:
+  level:
+    com.longvo.demo_identity_service: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.http.converter.json: DEBUG
+    feign.client.config.outbound-identity: DEBUG
+    com.longvo.demo_identity_service.repository.com.longvo.demo_identity_service.repository.httpclient.OutboundIdentityClient: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+    feign: DEBUG
+
+app:
+  frontend-url: ""
+  frontend-success-path: ""
+  services:
+    chat: "http://localhost:8080"
+
+vnpay:
+  tmnCode: "VNDX7U5C"
+  hashSecret: "Y0WF8JMTUBRRVXG19LIK749UFN22MP7X"
+  payUrl: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+  returnUrl: "http://localhost:4200/payment/result"
+
