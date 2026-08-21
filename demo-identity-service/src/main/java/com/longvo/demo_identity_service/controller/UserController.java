@@ -28,14 +28,14 @@ public class UserController {
     UserService userService;
     private final UserRepository userRepository;
 
-    @PostMapping
+    @PostMapping("/create")
         ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
             return ApiResponse.<UserResponse>builder()
                     .result(userService.createUser(request))
                     .build();
     }
 
-    @PostMapping("/password")
+    @PostMapping("/create-password")
     ApiResponse<Void> createPassword(@RequestBody @Valid CreatePasswordRequest request) {
         userService.createPassword(request);
         return ApiResponse.<Void>builder()
@@ -43,7 +43,7 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/password")
+    @PutMapping("/change-password")
     ApiResponse<Void> changePassword(@RequestBody @Valid ChangePasswordRequest request) {
         userService.changePassword(request);
         return ApiResponse.<Void>builder()

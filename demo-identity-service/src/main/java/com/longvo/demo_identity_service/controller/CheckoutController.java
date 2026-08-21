@@ -4,23 +4,18 @@ import com.longvo.demo_identity_service.dto.request.*;
 import com.longvo.demo_identity_service.dto.response.*;
 import com.longvo.demo_identity_service.service.CheckoutService;
 import com.longvo.demo_identity_service.service.OrderService;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/checkout")

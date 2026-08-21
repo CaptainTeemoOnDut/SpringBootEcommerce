@@ -1,13 +1,8 @@
 package com.longvo.demo_identity_service.controller;
 
-import com.longvo.demo_identity_service.dto.response.ApiResponse;
 import com.longvo.demo_identity_service.dto.response.OrderGroupHistoryResponse;
-import com.longvo.demo_identity_service.dto.response.OrderHistoryResponse;
-import com.longvo.demo_identity_service.dto.response.PagedResponse;
 import com.longvo.demo_identity_service.enums.OrderGroupStatus;
-import com.longvo.demo_identity_service.enums.OrderStatus;
 import com.longvo.demo_identity_service.service.OrderGroupHistoryService;
-import com.longvo.demo_identity_service.service.OrderHistoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,15 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class OrderHistoryController {
-    OrderHistoryService orderHistoryService;
     OrderGroupHistoryService orderGroupHistoryService;
 
     @GetMapping("/history")

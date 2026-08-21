@@ -2,13 +2,8 @@ package com.longvo.demo_identity_service.controller;
 
 
 import com.longvo.demo_identity_service.dto.request.CartItemRequest;
-import com.longvo.demo_identity_service.dto.request.CartRequest;
-import com.longvo.demo_identity_service.dto.request.PurchaseRequest;
 import com.longvo.demo_identity_service.dto.response.*;
 import com.longvo.demo_identity_service.service.CartRedisService;
-import com.longvo.demo_identity_service.service.CheckoutService;
-import com.longvo.demo_identity_service.service.OrderService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

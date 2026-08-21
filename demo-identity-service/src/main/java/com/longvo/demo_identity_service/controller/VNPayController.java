@@ -1,101 +1,85 @@
 package com.longvo.demo_identity_service.controller;
 
-import com.longvo.demo_identity_service.dto.request.PaymentRequest;
-import com.longvo.demo_identity_service.dto.request.PurchaseRequest;
-import com.longvo.demo_identity_service.dto.response.ApiResponse;
-import com.longvo.demo_identity_service.dto.response.PurchaseResponse;
+import com.longvo.demo_identity_service.dto.request.PaymentRequestDTO;
 import com.longvo.demo_identity_service.service.CheckoutService;
 import com.longvo.demo_identity_service.service.VNPayService;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/api/payment/vnpay")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class VNPayController {
 
+    private final VNPayService vnPayService;
+    private final CheckoutService checkoutService;
 
-    /*VNPayService vnPayService;
-    CheckoutService checkoutService;
-    @GetMapping("/callback")
-    public void handleCallback(HttpServletResponse response) throws IOException {
-        response.sendRedirect(
-                "http://localhost:4200/payment-result?status=success"
-        );
+    @PostMapping("/create")
+    public ResponseEntity<?> createPayment(
+            @RequestBody PaymentRequestDTO request,
+            HttpServletRequest httpRequest) {
+
+        String paymentUrl = vnPayService.createPaymentUrl(request, httpRequest);
+
+        return ResponseEntity.ok(paymentUrl);
     }
 
-    // Instant Payment Notification (IPN)
+    @GetMapping("/return")
+    public ResponseEntity<?> paymentReturn(HttpServletRequest request) {
+
+        Map<String, String> fields = new HashMap<>();
+
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+
+            String fieldName = params.nextElement();
+
+            String fieldValue = request.getParameter(fieldName);
+
+            fields.put(fieldName, fieldValue);
+        }
+
+        String responseCode = request.getParameter("vnp_ResponseCode");
+
+        if ("00".equals(responseCode)) {
+            return ResponseEntity.ok("Thanh toán thành công");
+        }
+
+        return ResponseEntity.ok("Thanh toán thất bại");
+    }
+
     @GetMapping("/ipn")
-    public ResponseEntity<String> handleIpn(HttpServletRequest request) {
+    public ResponseEntity<String> ipn(HttpServletRequest request) {
 
-        Map<String, String> params = extractParams(request);
+        String txnRef = request.getParameter("vnp_TxnRef");
 
-        boolean isValid = vnPayService.verifySignature(params);
-
-        if (!isValid) {
-            return ResponseEntity.ok("97"); // invalid signature
-        }
-
-        String orderId = params.get("vnp_TxnRef");
-        String responseCode = params.get("vnp_ResponseCode");
-        String amount = params.get("vnp_Amount");
-
-        try {
-
-            boolean success = checkoutService.processPaymentIpn(
-                    Long.valueOf(orderId),
-                    responseCode,
-                    Long.valueOf(amount)
+        if (txnRef == null) {
+            return ResponseEntity.ok(
+                    "{\"RspCode\":\"01\",\"Message\":\"Missing transaction reference\"}"
             );
-
-            if (success) {
-                return ResponseEntity.ok("00");
-            } else {
-                return ResponseEntity.ok("01");
-            }
-
-        } catch (Exception e) {
-            return ResponseEntity.ok("99");
         }
+
+        String[] parts = txnRef.split("_");
+
+        Long orderGroupId = Long.valueOf(parts[1]);
+
+        String responseCode = request.getParameter("vnp_ResponseCode");
+
+        String vnpAmount = request.getParameter("vnp_Amount");
+
+        if ("00".equals(responseCode)) {
+
+            // cập nhật order thành PAID
+            checkoutService.processPaymentIpn(orderGroupId, responseCode, Long.valueOf(vnpAmount));
+            return ResponseEntity.ok("{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}");
+        }
+
+        return ResponseEntity.ok("{\"RspCode\":\"01\",\"Message\":\"Order Fail\"}");
     }
-
-
-    private Map<String, String> extractParams(HttpServletRequest request) {
-
-        Map<String, String> params = new HashMap<>();
-
-        Enumeration<String> parameterNames = request.getParameterNames();
-
-        while (parameterNames.hasMoreElements()) {
-            String paramName = parameterNames.nextElement();
-            String paramValue = request.getParameter(paramName);
-
-            if (paramValue != null && !paramValue.isEmpty()) {
-                params.put(paramName, paramValue);
-            }
-        }
-
-        return params;
-    }*/
-
-
-
 
 }
