@@ -4,7 +4,6 @@ import com.devteria.gateway.dto.ApiResponse;
 import com.devteria.gateway.service.IdentityService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.server.HttpServerResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,11 +63,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return unauthenticated(exchange.getResponse());
 
         String token = authHeader.getFirst().replace("Bearer ", "");
-        log.info("Token: {}", token);
 
+        // 
         return identityService.introspect(token)
                 .flatMap(introspectResponse -> {
-                    log.info("Token is: {}", introspectResponse.getResult());
+
 
                     if (introspectResponse.getResult().isValid()) {
                         return chain.filter(exchange);
