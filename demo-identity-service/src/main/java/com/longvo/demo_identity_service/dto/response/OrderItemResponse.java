@@ -30,7 +30,7 @@ public class OrderItemResponse {
 
     private BigDecimal unitPrice;
 
-    private BigDecimal lineTotal;
+    //private BigDecimal lineTotal;
 
     private Integer quantity;
 

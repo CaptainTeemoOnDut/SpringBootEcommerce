@@ -17,20 +17,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 
@@ -38,7 +31,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class VNPayService {
 
-    OrderRepository orderRepository;
     private final OrderGroupRepository orderGroupRepository;
     private final VNPayConfig vnPayConfig;
     PaymentTransactionRepository paymentTransactionRepository;
@@ -59,8 +51,7 @@ public class VNPayService {
     @Value("${vnpay.returnUrl}")
     protected String vnpReturnUrl;
 
-    public VNPayService(OrderRepository orderRepository, OrderGroupRepository orderGroupRepository, VNPayConfig vnPayConfig, PaymentTransactionRepository paymentTransactionRepository) {
-        this.orderRepository = orderRepository;
+    public VNPayService(OrderGroupRepository orderGroupRepository, VNPayConfig vnPayConfig, PaymentTransactionRepository paymentTransactionRepository) {
         this.orderGroupRepository = orderGroupRepository;
         this.vnPayConfig = vnPayConfig;
         this.paymentTransactionRepository = paymentTransactionRepository;

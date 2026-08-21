@@ -1,16 +1,59 @@
+services:
 
-  services:
-    redis:
-      image: redis:6.2
-      ports:
+  identity-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-identity-service
+    ports:
+      - "8443:8443"
+    environment:
+      DBMS_CONNECTION: jdbc:mysql://mysql:3306/full-stack-ecommerce?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DBMS_USERNAME: springstudent
+      DBMS_PASSWORD: springstudent
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    container_name: demo-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: full-stack-ecommerce
+      MYSQL_USER: springstudent
+      MYSQL_PASSWORD: springstudent
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-proot"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:6.2
+    container_name: demo-redis
+    ports:
       - "6379:6379"
-
-    mysql:
-      image: mysql:8.0
-      ports:
-        - "3307:3306"
-      environment:
-        MYSQL_ROOT_PASSWORD: root
-        MYSQL_DATABASE: chatdb
-      volumes:
-        - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

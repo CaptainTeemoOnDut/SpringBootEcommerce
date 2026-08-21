@@ -46,6 +46,7 @@ public class ShopService {
         Shop shop = shopMapper.toShop(request);
         shop.setUser(user);
         shop.setStatus(ShopStatus.ACTIVE);
+        shop.setOwner(user);
 
         try {
             shop = shopRepository.save(shop);

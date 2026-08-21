@@ -52,6 +52,19 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
         );*/
 
+    List<Order> findAllByOrderGroupId(Long orderGroupId);
+
+    @Modifying
+    @Query("""
+    UPDATE Order o
+    SET o.status = :status
+    WHERE o.orderGroup.id = :orderGroupId
+""")
+    int updateStatusByOrderGroupId(
+            Long orderGroupId,
+            OrderStatus status
+    );
+
     @Query("""
     SELECT new com.longvo.demo_identity_service.dto.response.OrderHistoryResponse(
             o.id,

@@ -17,7 +17,7 @@ public enum ErrorCode {
     PRODUCT_EXISTED(1009, "Product existed", HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_EXISTED(1010, "Product not existed", HttpStatus.NOT_FOUND),
     PRODUCT_CATEGORY_NOT_EXISTED(1011, "Product Category not existed", HttpStatus.NOT_FOUND),
-    TOKEN_EXPIRED(1012, "TOKEN_EXPIRED", HttpStatus.UNAUTHORIZED),
+    TOKEN_EXPIRED(1012, "Token expired", HttpStatus.UNAUTHORIZED),
     REVIEW_ALREADY_EXISTS(1013, "You have already reviewed this product in this order", HttpStatus.BAD_REQUEST),
     REVIEW_NOT_EXISTED(1014, "Reviewed not existed", HttpStatus.BAD_REQUEST),
     USER_NOT_ACTIVE(1015, "User not active", HttpStatus.NOT_FOUND),
@@ -41,7 +41,10 @@ public enum ErrorCode {
     PASSWORD_EXISTED(1030, "Password existed", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD(1031, "Wrong Password", HttpStatus.BAD_REQUEST),
     PASSWORD_DUPLICATED(1032, "Password duplicated", HttpStatus.BAD_REQUEST),
-    PASSWORD_NOT_EXISTED(1033, "Password not existed", HttpStatus.NOT_FOUND);
+    PASSWORD_NOT_EXISTED(1033, "Password not existed", HttpStatus.NOT_FOUND),
+    INVALID_CREDENTIALS(1034, "Invalid username or password", HttpStatus.UNAUTHORIZED),
+    TOKEN_GENERATION_FAILED(1035, "Token generation failed", HttpStatus.EXPECTATION_FAILED),
+    UNAUTHORIZED(1035, "Unauthorized", HttpStatus.UNAUTHORIZED),;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

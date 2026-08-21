@@ -1,9 +1,7 @@
 package com.longvo.demo_identity_service.service;
 
 import com.longvo.demo_identity_service.configuration.SecurityUtils;
-import com.longvo.demo_identity_service.dto.DraftOrderCreatedEvent;
 import com.longvo.demo_identity_service.dto.DraftOrderRedis;
-import com.longvo.demo_identity_service.dto.OrderGroupRedis;
 import com.longvo.demo_identity_service.dto.request.*;
 import com.longvo.demo_identity_service.dto.response.*;
 import com.longvo.demo_identity_service.entity.*;
@@ -12,16 +10,12 @@ import com.longvo.demo_identity_service.enums.OrderStatus;
 import com.longvo.demo_identity_service.enums.PaymentMethods;
 import com.longvo.demo_identity_service.exception.AppException;
 import com.longvo.demo_identity_service.exception.ErrorCode;
-import com.longvo.demo_identity_service.mapper.OrderMapper;
-import com.longvo.demo_identity_service.mapper.ProductVariantMapper;
-import com.longvo.demo_identity_service.mapper.UserMapper;
 import com.longvo.demo_identity_service.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -29,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -47,11 +40,13 @@ public class OrderService {
     UserRepository userRepository;
     CartRedisService cartRedisService;
     StringRedisTemplate redisTemplate;
-    RedisCacheService redisCacheService;
     ProductVariantRepository productVariantRepository;
     VNPayService vnPayService;
-    private final OrderItemRepository orderItemRepository;
-    private ApplicationEventPublisher eventPublisher;
+    OrderItemRepository orderItemRepository;
+
+    public int updateStatusByOrderGroupId(Long orderGroupId, OrderStatus status) {
+        return orderRepository.updateStatusByOrderGroupId(orderGroupId, status);
+    }
 
 
     private String getCartKey(Long userId) {
@@ -60,8 +55,7 @@ public class OrderService {
 
     public OrderGroupPreviewResponse previewOrder(CartRequest request) {
         //TAM COMMENT userId nhe
-        //Long userId = SecurityUtils.getCurrentUserId();
-        Long userId = 1L;
+        Long userId = SecurityUtils.getCurrentUserId();
 
         // 1. Lấy toàn bộ SKU IDs mà user đã chọn
         List<Long> selectedSkuIds = request.getSkuIds();
@@ -93,8 +87,8 @@ public class OrderService {
         return OrderGroupPreviewResponse.builder()
                 .shops(shopPreviews)
                 .fullAddress(address.getFullAddress())
-                .receiverName("Vo Long")
-                .phoneNumber("0348743025")
+                .receiverName(address.getRecipientName())
+                .phoneNumber(address.getPhoneNumber())
                 .subtotalBeforeDiscount(subtotalBeforeDiscount)
                 .discountAmount(discountAmount)
                 .grandTotal(grandTotal)
@@ -106,8 +100,8 @@ public class OrderService {
     public ShopOrderPreview calculateShopPreview(Shop shop, List<ProductVariant> variants, List<Long> selectedSkuIds) {
 
         //TAM COMMENT userId nhe
-        //Long userId = SecurityUtils.getCurrentUserId();
-        Long userId = 1L;
+        Long userId = SecurityUtils.getCurrentUserId();
+
         String cartKey = getCartKey(userId);
 
         // Sử dụng hMGet để lấy nhiều field cùng lúc trong Redis cho nhanh
@@ -151,7 +145,6 @@ public class OrderService {
                             .imageUrl(variant.getImageUrl())
                             .unitPrice(unitPrice)
                             .quantity(currentQtyInCart)
-                            .lineTotal(lineTotal)
                             .build()
             );
         }
@@ -266,9 +259,9 @@ public class OrderService {
 
     @Transactional
     public OrderGroupResponse createDraftOrder(PlaceOrderRequest request, HttpServletRequest httpRequestServlet) throws UnsupportedEncodingException {
-        //Long userId = SecurityUtils.getCurrentUserId();
+        Long userId = SecurityUtils.getCurrentUserId();
         System.out.println("PLACE ORDER REQUEST:" + request);
-        Long userId = 1L;
+
         String cartKey = getCartKey(userId);
         LocalDateTime now = LocalDateTime.now();
 
@@ -737,8 +730,8 @@ public class OrderService {
     @Transactional
     public OrderGroupResponse placeOrder(PlaceOrderRequest request) {
         //TAM COMMENT userId nhe
-        //Long userId = SecurityUtils.getCurrentUserId();
-        Long userId = 1L;
+        Long userId = SecurityUtils.getCurrentUserId();
+
         String cartKey = getCartKey(userId);
 
         // 3. Query thông tin Product/Shop từ DB dựa trên list SkuId

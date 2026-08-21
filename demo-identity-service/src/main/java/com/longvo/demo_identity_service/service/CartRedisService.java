@@ -6,7 +6,6 @@ import com.longvo.demo_identity_service.dto.request.CartItemRequest;
 import com.longvo.demo_identity_service.dto.response.CartItemResponse;
 import com.longvo.demo_identity_service.dto.response.CartResponse;
 import com.longvo.demo_identity_service.dto.response.ProductVariantResponse;
-import com.longvo.demo_identity_service.dto.response.VariantInforDTO;
 import com.longvo.demo_identity_service.entity.CartItem;
 import com.longvo.demo_identity_service.entity.ProductVariant;
 import com.longvo.demo_identity_service.exception.AppException;
@@ -16,7 +15,6 @@ import com.longvo.demo_identity_service.repository.CartItemRepository;
 import com.longvo.demo_identity_service.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;

@@ -1,10 +1,7 @@
 package com.longvo.demo_identity_service.service;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.longvo.demo_identity_service.dto.request.ReviewMediaRequest;
 import com.longvo.demo_identity_service.dto.request.ReviewCreationRequest;
-import com.longvo.demo_identity_service.dto.request.ReviewUpdateRequest;
 import com.longvo.demo_identity_service.dto.response.*;
 import com.longvo.demo_identity_service.entity.*;
 import com.longvo.demo_identity_service.enums.ReviewStatus;
@@ -18,20 +15,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -40,19 +30,14 @@ import java.util.List;
 @Slf4j
 public class ReviewService {
 
-    RatingService ratingService;
     ReviewRepository reviewRepository;
     ReviewMediaRepository reviewMediaRepository;
     UserRepository userRepository;
     VariantRepository variantRepository;
-    OrderRepository orderRepository;
     ReviewMapper reviewMapper;
     ReviewMediaService reviewMediaService;
     OrderItemRepository orderItemRepository;
-    ProductRepository productRepository;
     ProductRatingStatsRepository productRatingStatsRepository;
-    private final ImageUploadService imageUploadService;
-    private final Cloudinary cloudinary;
 
     public Page<ReviewResponse> getReviews(Long productId, Integer rating, Pageable pageable) {
 

@@ -31,6 +31,10 @@ public class Shop {
 
     String avatarUrl;
 
+    @OneToOne
+    @JoinColumn(name = "owner_id", unique = true)
+    private User owner;
+
     @Column(nullable = false)
     Boolean isActive = true;
 

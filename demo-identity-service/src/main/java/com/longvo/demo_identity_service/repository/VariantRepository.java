@@ -1,6 +1,6 @@
 package com.longvo.demo_identity_service.repository;
 
-import com.longvo.demo_identity_service.dto.response.VariantInforDTO;
+import com.longvo.demo_identity_service.dto.response.VariantInfoResponse;
 import com.longvo.demo_identity_service.entity.ProductVariant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -44,7 +44,7 @@ order by v.id
     List<ProductVariant> findAllByProductId(@Param("productId") Long productId);
 
     @Query("""
-        SELECT new com.longvo.demo_identity_service.dto.response.VariantInforDTO(
+        SELECT new com.longvo.demo_identity_service.dto.response.VariantInfoResponse(
             v.id,
             v.price,
             v.stock
@@ -52,7 +52,7 @@ order by v.id
         FROM ProductVariant v
         WHERE v.id = :variantId
     """)
-    Optional<VariantInforDTO> findVariantInforById(@Param("variantId") Long variantId);
+    Optional<VariantInfoResponse> findVariantInforById(@Param("variantId") Long variantId);
 
 
 /*

@@ -23,7 +23,7 @@ public class RefreshToken {
 
     String token; //UUID
 
-    Date expiryTime;
+    //Date expiryTime;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

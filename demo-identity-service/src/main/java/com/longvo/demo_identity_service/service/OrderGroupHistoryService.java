@@ -3,10 +3,7 @@ package com.longvo.demo_identity_service.service;
 import com.longvo.demo_identity_service.dto.response.OrderGroupHistoryResponse;
 import com.longvo.demo_identity_service.dto.response.OrderHistoryResponse;
 import com.longvo.demo_identity_service.dto.response.OrderItemResponse;
-import com.longvo.demo_identity_service.entity.Order;
 import com.longvo.demo_identity_service.enums.OrderGroupStatus;
-import com.longvo.demo_identity_service.enums.OrderStatus;
-import com.longvo.demo_identity_service.mapper.OrderHistoryMapper;
 import com.longvo.demo_identity_service.repository.OrderGroupRepository;
 import com.longvo.demo_identity_service.repository.OrderItemRepository;
 import com.longvo.demo_identity_service.repository.OrderRepository;
@@ -32,9 +29,7 @@ public class OrderGroupHistoryService {
 
     OrderRepository orderRepository;
     OrderItemRepository orderItemRepository;
-    OrderHistoryMapper orderHistoryMapper;
     OrderGroupRepository orderGroupRepository;
-    OrderHistoryService orderHistoryService;
 
     public Page<OrderGroupHistoryResponse> getOrderHistory(Long userId, OrderGroupStatus orderStatus, Pageable pageable) {
         Page<OrderGroupHistoryResponse> orderGroupPage;

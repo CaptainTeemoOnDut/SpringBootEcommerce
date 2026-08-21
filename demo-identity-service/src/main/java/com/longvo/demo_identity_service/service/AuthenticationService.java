@@ -60,7 +60,7 @@ public class AuthenticationService {
 
     @NonFinal
     @Value("${jwt.ttl}")
-    protected Duration REFRESH_TOKEN_TTL;
+    protected Duration TTL;
 
     @NonFinal
     @Value("${google.client-id}")
@@ -133,7 +133,6 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-
     public AuthenticationResponse outboundAuthenticate(String code){
         var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
                 .code(code)
@@ -168,7 +167,7 @@ public class AuthenticationService {
 
         var accessToken = generateToken(user);
         String refreshToken = refreshTokenService.createRefreshToken();
-        redisRefreshTokenService.save(refreshToken, user.getId(), REFRESH_TOKEN_TTL);
+        redisRefreshTokenService.save(refreshToken, user.getId(), TTL);
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -193,7 +192,8 @@ public class AuthenticationService {
         //bo sung
         String refreshToken = refreshTokenService.createRefreshToken();
 
-        redisRefreshTokenService.save(refreshToken, user.getId(), REFRESH_TOKEN_TTL);
+        redisRefreshTokenService.save(refreshToken, user.getId(), TTL);
+
         return AuthenticationResponse.builder()
                 .userId(user.getId().toString())
                 .accessToken(accessToken)
@@ -245,8 +245,10 @@ public class AuthenticationService {
         redisRefreshTokenService.save(
                 newRefreshToken,
                 user.getId(),
-                REFRESH_TOKEN_TTL
+                TTL
         );
+
+        redisRefreshTokenService.save(newRefreshToken, Long.valueOf(userId), TTL);
 
         return AuthenticationResponse.builder()
                 .userId(user.getId().toString())

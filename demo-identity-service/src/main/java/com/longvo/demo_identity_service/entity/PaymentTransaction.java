@@ -50,7 +50,8 @@ public class PaymentTransaction {
 
     private String responseCode;
 
-    private String transactionStatus;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus transactionStatus;
 
     private LocalDateTime paidAt;
 

@@ -50,4 +50,7 @@ public class OrderGroup {
     @OneToMany(mappedBy = "orderGroup", cascade = CascadeType.ALL)
     private Set<Order> orders = new HashSet<>();
 
+    @Version
+    private Long version;
+
 }

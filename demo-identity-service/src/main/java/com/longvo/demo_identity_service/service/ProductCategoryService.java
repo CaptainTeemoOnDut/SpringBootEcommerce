@@ -1,15 +1,9 @@
 package com.longvo.demo_identity_service.service;
 
-import com.longvo.demo_identity_service.dto.response.AttributeResponse;
 import com.longvo.demo_identity_service.dto.response.CategoryHomeResponse;
 import com.longvo.demo_identity_service.dto.response.CategoryTreeResponse;
-import com.longvo.demo_identity_service.entity.CategoryAttribute;
 import com.longvo.demo_identity_service.entity.ProductCategory;
-import com.longvo.demo_identity_service.exception.AppException;
-import com.longvo.demo_identity_service.exception.ErrorCode;
-import com.longvo.demo_identity_service.mapper.CategoryAttributeMapper;
 import com.longvo.demo_identity_service.mapper.CategoryHomeMapper;
-import com.longvo.demo_identity_service.repository.CategoryAttributeRepository;
 import com.longvo.demo_identity_service.repository.ProductCategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

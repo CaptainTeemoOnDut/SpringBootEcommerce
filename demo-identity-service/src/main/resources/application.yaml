@@ -4,12 +4,11 @@ server:
     context-path: /identity
 
 spring:
-
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/full-stack-ecommerce?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC}
-    driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:springstudent}
+    driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DBMS_USERNAME:springstudent}
+    password: ${DBMS_PASSWORD:springstudent}
 
   jpa:
     hibernate:
@@ -29,7 +28,7 @@ spring:
 
   data:
     redis:
-      url: redis://localhost:6379
+      url: ${REDIS_URL:redis://localhost:6379}
 
 google:
   client-id: "403856941335-r271t6gtu3o8gg67mp9cemu3m7hkrtl5.apps.googleusercontent.com"
@@ -39,7 +38,8 @@ google:
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 60 # in second
-  refreshable-duration: 36000 # in second
+  ttl: 7d
+  issuer: "longvo"
 
 cloudinary:
   cloud_name: "dpskojq8d"

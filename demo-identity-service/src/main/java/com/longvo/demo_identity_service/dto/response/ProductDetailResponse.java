@@ -1,17 +1,8 @@
 package com.longvo.demo_identity_service.dto.response;
 
-import com.longvo.demo_identity_service.entity.ProductCategory;
-import com.longvo.demo_identity_service.entity.ProductMedia;
-import com.longvo.demo_identity_service.entity.Shop;
-import com.longvo.demo_identity_service.enums.ProductStatus;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +24,7 @@ public class ProductDetailResponse {
     private List<ProductVariationResponse> variations;
 
     // Bản đồ tra cứu toàn cục: "101-202" -> 101 thay vì "Đỏ-S" -> 101
-    private Map<String, VariantInforDTO> variantLookup;
+    private Map<String, VariantInfoResponse> variantLookup;
 
     public ProductDetailResponse(
             Long id,

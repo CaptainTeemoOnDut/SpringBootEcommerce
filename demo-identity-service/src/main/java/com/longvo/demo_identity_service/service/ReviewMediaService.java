@@ -1,18 +1,11 @@
 package com.longvo.demo_identity_service.service;
 
-import com.cloudinary.Cloudinary;
-import com.longvo.demo_identity_service.dto.response.ReviewAggregateResponse;
 import com.longvo.demo_identity_service.dto.response.ReviewMediaResponse;
-import com.longvo.demo_identity_service.dto.response.ReviewResponse;
-import com.longvo.demo_identity_service.dto.response.VariantOptionValueResponse;
-import com.longvo.demo_identity_service.mapper.ReviewMapper;
 import com.longvo.demo_identity_service.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -28,14 +21,10 @@ import java.util.LinkedHashMap;
 @Slf4j
 public class ReviewMediaService {
 
-    ReviewRepository reviewRepository;
+
     ReviewMediaRepository reviewMediaRepository;
-    UserRepository userRepository;
-    //VariantRepository variantRepository;
-    OrderRepository orderRepository;
-    ReviewMapper reviewMapper;
-    private final ImageUploadService imageUploadService;
-    private final Cloudinary cloudinary;
+
+
 
     public Map<Long, List<ReviewMediaResponse>> getByReviewIds(List<Long> reviewIds) {
 

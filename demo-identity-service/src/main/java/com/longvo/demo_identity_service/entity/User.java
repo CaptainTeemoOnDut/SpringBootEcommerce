@@ -44,6 +44,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     Set<Order> orders = new HashSet<>();
 
+    @OneToOne(mappedBy = "owner")
+    private Shop shop;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     Set<RefreshToken> refreshTokens = new HashSet<>();
 

@@ -27,14 +27,26 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {
-        "/users/**", "/auth/token", "/auth/introspect", "/auth/logout","/auth/refresh", "/images/upload", "/auth/delete", "/auth/google/login",        // thêm dòng này
-            "/auth/**","/api/**",
-            "/identity/auth/google/login", "/media/**", "/products", "/cart/**", "/checkout/**", "/reviews/**"
+    private final String[] PUBLIC_POST_METHOD_ENDPOINTS = {
+            "/users/create",
+            "/users/create-password",
+            "/auth/**",
+            "/media/**"
     };
 
     private final String[] PUBLIC_GET_METHOD_ENDPOINTS = {
-            "/orders/**","/users/**","/reviews/**","/api/**","/payment/**","/products/**","/cart/**", "/auth/**", "/product-categories/**", "/shop/**", "/admin/**" //"/products", "/products/**", "/product-categories", "/product-categories/**","/**"
+            "/products/all",
+            "/products/search",
+            "/products/category",
+            "/products/product/**",
+            "/products/variants/**",
+            "/products/shop/**",
+            "/products/product_card",
+            "/products/product_card",
+            "/users/**",
+            "/reviews/**",
+            "/auth/**",
+            "/product-categories/**"
     };
 
     @Autowired
@@ -62,7 +74,7 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.POST, PUBLIC_POST_METHOD_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_METHOD_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUBLIC_GET_METHOD_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
@@ -77,8 +89,32 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
-    /*@Bean
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
+    }
+
+    //@Bean
+    //PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(10); }
+}
+
+/*
+private final String[] PUBLIC_POST_METHOD_ENDPOINTS = {
+        "/users/**", "/auth/token", "/auth/introspect", "/auth/logout","/auth/refresh", "/images/upload", "/auth/delete", "/auth/google/login",        // thêm dòng này
+            "/auth/**","/api/**",
+            "/identity/auth/google/login", "/media/**", "/products", "/cart/**", "/checkout/**", "/reviews/**"
+    };
+
+    private final String[] PUBLIC_GET_METHOD_ENDPOINTS = {
+            "/orders/**","/users/**","/reviews/**","/api/**","/payment/**","/products/**","/cart/**", "/auth/**", "/product-categories/**", "/shop/**", "/admin/**" //"/products", "/products/**", "/product-categories", "/product-categories/**","/**"
+    };
+@Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors(Customizer.withDefaults())
@@ -114,18 +150,3 @@ public class SecurityConfig {
 
         return source;
     }*/
-
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
-
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-
-        return jwtAuthenticationConverter;
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(10); }
-}

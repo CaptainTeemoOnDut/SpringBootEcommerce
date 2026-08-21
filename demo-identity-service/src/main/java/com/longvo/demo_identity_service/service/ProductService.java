@@ -1,6 +1,7 @@
 package com.longvo.demo_identity_service.service;
 
 import com.longvo.demo_identity_service.component.ProductSpecification;
+import com.longvo.demo_identity_service.configuration.SecurityUtils;
 import com.longvo.demo_identity_service.dto.request.*;
 import com.longvo.demo_identity_service.dto.response.*;
 import com.longvo.demo_identity_service.entity.*;
@@ -18,7 +19,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductService {
 
-    @Autowired
     ProductRepository productRepository;
     ShopRepository shopRepository;
     ProductMapper productMapper;
@@ -52,13 +51,7 @@ public class ProductService {
     VariantAttributeRepository variantAttributeRepo;
     ProductVariationQueryService productVariationQueryService;
 
-
-    /*public Page<ProductResponse> getProducts(Long categoryId, Pageable pageable) {
-        return productRepository.findByCategoryId(categoryId, pageable).map(productMapper::toProductResponse);
-    }*/
-
-
-
+    @PreAuthorize("hasRole('SELLER')")
     @Transactional
     public ProductResponse createProduct(ProductCreationRequest request) {
 
@@ -73,11 +66,11 @@ public class ProductService {
         Shop shop = shopRepository.findById(request.getShopId())
                 .orElseThrow(() -> new AppException(ErrorCode.SHOP_NOT_EXISTED));
 
+        validateShopOwnership(shop.getId());
+
         product.setShop(shop);
 
         product.setStatus(ProductStatus.DRAFT);
-
-
 
         mapMedia(product, request);
 
@@ -191,40 +184,6 @@ public class ProductService {
             List<VariantAttribute> attributes = new ArrayList<>();
             StringBuilder uniqueKey = new StringBuilder();
 
-            /*for (VariantAttributeCreationRequest attrReq : vReq.getAttributes()) {
-
-                String mapKey = attrReq.getVariationCode() + ":" + attrReq.getOptionValue();
-                ProductVariationOption option = optionMap.get(mapKey);
-
-                if (option == null) {
-                    throw new AppException(ErrorCode.INVALID_VARIANT_ATTRIBUTE);
-                }
-
-                VariantAttribute va = new VariantAttribute();
-                va.setVariant(variant);
-                //va.setVariationCode(attrReq.getVariationCode());
-                ProductVariation variation = va.getVariation();
-                if (variation == null) {
-                    // Nếu null, bạn phải khởi tạo nó hoặc gán từ một nguồn khác
-                    variation = new ProductVariation();
-                    va.setVariation(variation);
-                }
-                variation.setCode(attrReq.getVariationCode());
-                //va.getVariation().setCode(attrReq.getVariationCode());
-                //va.setOptionValue(attrReq.getOptionValue());
-                ProductVariationOption options = va.getOption();
-                if (options == null) {
-                    // Nếu null, bạn phải khởi tạo nó hoặc gán từ một nguồn khác
-                    options = new ProductVariationOption();
-                    va.setOption(options);
-                }
-                options.setValue(attrReq.getOptionValue());
-                //va.getOption().setValue(attrReq.getOptionValue());
-
-                attributes.add(va);
-                uniqueKey.append(mapKey).append("|");
-            }*/
-
             for (VariantAttributeCreationRequest attrReq : vReq.getAttributes()) {
 
                 String mapKey = attrReq.getVariationCode() + ":" + attrReq.getOptionValue();
@@ -283,118 +242,6 @@ public class ProductService {
         }
     }
 
-
-
-    //@Transactional
-    //@PreAuthorize("hasRole('ADMIN')")
-    /*public ProductResponse createProduct(ProductCreationRequest request) {
-
-        System.out.println(request);
-
-        Product product = productMapper.toProduct(request);
-
-        ProductCategory category = productCategoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_CATEGORY_NOT_EXISTED));
-        product.setCategory(category);
-
-        mapMedia(product, request);
-
-
-
-        List<CategoryAttributeProjection> categoryAttributeProjections =
-                categoryAttributeRepo.findAllAttributesByCategoryTree(category.getId());
-
-        List<Attribute> Attributes = categoryAttributeProjections.stream()
-                .map(CategoryAttributeProjection::getAttributeId)
-
-        Map<String, Attribute> attributeMap = categoryAttributes.stream()
-                .map(CategoryAttribute::getAttribute)
-                .collect(Collectors.toMap(Attribute::getCode, a -> a));
-
-        validateRequiredAttributes(categoryAttributes, request);
-
-        List<ProductAttributeValue> values = new ArrayList<>();
-
-        log.debug("ATTRIBUTE MAP KEYS: {}", attributeMap.keySet());
-
-        for (AttributeValueRequest req : request.getDetails()) {
-            log.debug("REQ CODE: {}", req.getCode());
-            // 1. Tìm attribute theo code
-            Attribute attribute = attributeMap.get(req.getCode());
-            log.debug("ATTRIBUTE: {}", attribute);
-            if (attribute == null) {
-                log.debug("ATTRIBUTE NULL IS: {}", attribute);
-                throw new AppException(ErrorCode.INVALID_ATTRIBUTE);
-            }
-
-            // 2. Tạo entity lưu value
-            ProductAttributeValue pav = new ProductAttributeValue();
-            pav.setProduct(product);
-            pav.setAttribute(attribute);
-
-            // 3. Map value theo datatype
-            switch (attribute.getDataType()) {
-                case STRING -> pav.setValueString(req.getValue());
-
-                case NUMBER -> {
-                    try {
-                        pav.setValueNumber(Double.parseDouble(req.getValue()));
-                    } catch (NumberFormatException e) {
-                        throw new AppException(ErrorCode.INVALID_ATTRIBUTE_TYPE);
-                    }
-                }
-
-                case BOOLEAN -> pav.setValueBoolean(Boolean.parseBoolean(req.getValue()));
-            }
-
-            values.add(pav);
-        }
-
-        pavRepo.saveAll(values);
-
-        productRepository.save(product);
-
-        System.out.println("CREATE PRODUCT SUCCESSFULLY");
-
-        return productMapper.toProductResponse(product);
-    }*/
-
-    /*@Transactional
-    public ProductResponse createProduct(ProductCreationRequest request) {
-
-        Product product = productMapper.toProduct(request);
-
-        ProductCategory category = productCategoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_CATEGORY_NOT_EXISTED));
-        product.setCategory(category);
-
-        List<CategoryAttribute> categoryAttributes =
-                categoryAttributeRepo.findByCategoryId(category.getId());
-
-        validateRequiredAttributes(categoryAttributes, request);
-
-        Map<String, Attribute> attributeMap = categoryAttributes.stream()
-                .map(CategoryAttribute::getAttribute)
-                .collect(Collectors.toMap(Attribute::getCode, a -> a));
-
-        for (AttributeValueRequest req : request.getDetails()) {
-            Attribute attribute = attributeMap.get(req.getCode());
-            if (attribute == null) {
-                throw new AppException(ErrorCode.INVALID_ATTRIBUTE);
-            }
-
-            ProductAttributeValue pav = mapAttributeValue(req, attribute);
-            product.addAttributeValue(pav);
-        }
-
-        mapMedia(product, request);
-
-        productRepository.save(product);
-
-        return productMapper.toProductResponse(product);
-    }*/
-
-
     private void mapMedia(Product product, ProductCreationRequest request) {
 
 
@@ -436,55 +283,25 @@ public class ProductService {
         }
     }
 
-    private void validateRequiredAttributes(
-            List<CategoryAttribute> categoryAttributes,
-            ProductCreationRequest request) {
-
-        // 1. Check details rỗng
-        if (request.getCategoryDetails() == null || request.getCategoryDetails().isEmpty()) {
-            throw new AppException(ErrorCode.ATTRIBUTE_REQUIRED);
-        }
-
-        // 2. Lấy tất cả code user gửi lên
-        Set<String> requestCodes = request.getCategoryDetails().stream()
-                .map(AttributeValueRequest::getCode)
-                .collect(Collectors.toSet());
-
-        // 3. Duyệt các attribute của category
-        for (CategoryAttribute ca : categoryAttributes) {
-
-            if (!ca.isRequired()) continue;
-
-            String requiredCode = ca.getAttribute().getCode();
-
-            // 4. Nếu thiếu attribute bắt buộc
-            if (!requestCodes.contains(requiredCode)) {
-                throw new AppException(ErrorCode.ATTRIBUTE_REQUIRED);
-            }
-        }
-    }
-
-
-
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteProduct (Long id) {
         productRepository.deleteById(id);
     }
 
-    /*@PreAuthorize("hasRole('ADMIN')")
-    public Page<ProductResponse> getPendingApprovalProduct (ProductStatus status, Pageable pageable) {
-        return productRepository.findByStatus(status, pageable ).map(productMapper::toProductResponse);
-    }*/
-
+    @PreAuthorize("hasRole('SELLER')")
     public ProductResponse pushProduct (Long id) {
+
         Product product = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+
+        validateShopOwnership(product.getShop().getId());
+
         product.setStatus(ProductStatus.valueOf(String.valueOf(ProductStatus.PENDING_APPROVAL)));
 
         Product updatedProduct = productRepository.save(product);
         return productMapper.toProductResponse(updatedProduct);
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse approveProduct (Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
         product.setStatus(ProductStatus.valueOf(String.valueOf(ProductStatus.APPROVED)));
@@ -493,7 +310,7 @@ public class ProductService {
         return productMapper.toProductResponse(updatedProduct);
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse rejectProduct (Long id, ProductRejectRequest request) {
         Product product = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
         product.setStatus(ProductStatus.valueOf(String.valueOf(ProductStatus.REJECTED)));
@@ -559,65 +376,72 @@ public class ProductService {
     }
 
     public Page<ProductCardResponse> findProductCards(Long categoryId, Pageable pageable) {
-        System.out.println("CATEGORY ID: " + categoryId);
+
         if (!productCategoryRepository.existsById(categoryId)) {
             throw new AppException(ErrorCode.PRODUCT_CATEGORY_NOT_EXISTED);
         }
 
-        System.out.println("CATEGORY HAHA: " + productRepository.findProductCards(categoryId,ProductStatus.APPROVED, pageable));
-
         return productRepository.findProductCards(categoryId,ProductStatus.APPROVED, pageable);
     }
 
-    public Page<ProductTableRowResponse> findProductsForSellerTable(Long shopId, Pageable pageable) {
-        // Tam comment dong nay nhe
-        /*if (!shopRepository.existsById(shopId)) {
-            throw new AppException(ErrorCode.SHOP_NOT_EXISTED);
-        }*/
-        return productRepository.findProductsForSellerTable(shopId, pageable);
+    private void validateShopOwnership(Long shopId) {
+
+        Long userId = SecurityUtils.getCurrentUserId();
+
+        boolean isOwner =
+                shopRepository.existsByIdAndOwnerId(shopId, userId);
+
+        if (!isOwner) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
     }
 
+    @PreAuthorize("hasRole('SELLER')")
+    public Page<ProductTableRowResponse> findProductsForSellerTable(
+            Long shopId,
+            Pageable pageable
+    ) {
+
+        validateShopOwnership(shopId);
+
+        return productRepository.findProductsForSellerTable(
+                shopId,
+                pageable
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ProductTableRowResponse> findPendingApprovalProductsForAdminTable(Pageable pageable) {
 
 
         return productRepository.findProductsForAdminTable(ProductStatus.PENDING_APPROVAL,pageable);
     }
 
-    public Page<ProductTableRowResponse> findPendingApprovalProductsForShopTable(Long shopId, Pageable pageable) {
+    @PreAuthorize("hasRole('SELLER')")
+    public Page<ProductTableRowResponse> findPendingApprovalProductsForShopTable(
+            Long shopId,
+            Pageable pageable
+    ) {
 
+        validateShopOwnership(shopId);
 
-        return productRepository.findPendingApprovalProductsForShopTable(shopId, ProductStatus.PENDING_APPROVAL,pageable);
+        return productRepository.findPendingApprovalProductsForShopTable(
+                shopId,
+                ProductStatus.PENDING_APPROVAL,
+                pageable
+        );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ProductTableRowResponse> findHiddenProductsForAdminTable(Pageable pageable) {
 
 
         return productRepository.findProductsForAdminTable(ProductStatus.HIDDEN,pageable);
     }
 
-    public Page<ProductTableRowResponse> findHiddenProductsForShopTable(Long shopId, Pageable pageable) {
-
-
-        return productRepository.findHiddenProductsForShopTable(shopId, ProductStatus.HIDDEN,pageable);
-    }
-
-    /*public Page<ProductResponse> getProductsByShopIdAndStatus(String shopId,ProductStatus status, Pageable pageable) {
-        return productRepository.findByShopIdAndStatus(shopId,status, pageable).map(productMapper::toProductResponse);
-    }*/
-
-    public Page<ProductResponse> searchProductsByName(String name, Pageable pageable) {
-        return productRepository.findByNameContaining(name, pageable).map(productMapper::toProductResponse);
-    }
-
-    public ProductResponse getProductById(Long productId) {
-        return productMapper.toProductResponse(productRepository.findById(productId)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)));
-    }
-
-
-    //@PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
     public ProductDetailResponse getProductDetail(Long productId) {
-        //System.out.println("PRODUCT ID HA HA HA" + productId);
+
         ProductDetailResponse detail = productRepository.getProductDetails(productId);
 
         if (detail == null) {
@@ -626,9 +450,6 @@ public class ProductService {
 
         List<ProductVariationResponse> variation = productVariationQueryService.getProductVariations(productId);
 
-        // 2. Lấy tất cả các biến thể của sản phẩm đó kèm theo các Option của chúng
-        // Nên dùng @EntityGraph hoặc Join Fetch trong Repository để tối ưu 1 lần query
-        //List<ProductVariant> variants = variantRepo.findAllByProductId(productId);
 
         detail.setVariations(variation);
 
@@ -645,8 +466,8 @@ public class ProductService {
         return detail;
     }
 
-    @Transactional(readOnly = true)
-    public Map<String, VariantInforDTO> getVariantLookup(Long productId) {
+
+    public Map<String, VariantInfoResponse> getVariantLookup(Long productId) {
         // Lấy tất cả các biến thể của sản phẩm, kèm theo attributes và options
         List<ProductVariant> variants = variantRepo.findAllByProductId(productId);
 
@@ -657,8 +478,12 @@ public class ProductService {
                         // Sắp xếp ID để đảm bảo tính nhất quán (ví dụ: Luôn là "10-20")
                         .sorted()
                         .collect(Collectors.joining("-")),
-                variant -> new VariantInforDTO(variant.getId(),variant.getPrice(), variant.getStock()),
-                (existing, replacement) -> existing // Xử lý nếu trùng lặp key
+                variant -> new VariantInfoResponse(variant.getId(),variant.getPrice(), variant.getStock()),
+                (existing, replacement) -> {
+                    throw new IllegalStateException(
+                            "Duplicate variant combination"
+                    );
+                }
         ));
     }
 
