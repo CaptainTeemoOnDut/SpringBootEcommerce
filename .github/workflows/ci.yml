@@ -44,3 +44,4 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: vothanhthienlong/demo-identity-service:latest
+
