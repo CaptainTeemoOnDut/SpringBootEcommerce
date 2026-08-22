@@ -17,7 +17,7 @@ import java.util.List;
 @Table(
         name = "product_variation_option",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"variation_id", "value"})
+                @UniqueConstraint(columnNames = {"variation_id", "option_value"})
         }
 )
 public class ProductVariationOption {
@@ -26,7 +26,7 @@ public class ProductVariationOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "option_value", nullable = false)
     private String value; // Black, XL
 
     @Column(nullable = false)

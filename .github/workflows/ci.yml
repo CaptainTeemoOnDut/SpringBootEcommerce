@@ -1,4 +1,4 @@
-name: CI identity
+name: CI
 
 on:
   push:
