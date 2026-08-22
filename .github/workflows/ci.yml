@@ -26,7 +26,7 @@ jobs:
 
       - name: Build with Maven
         working-directory: ./demo-identity-service
-        run: chmod +x ./mvnw && ./mvnw clean package -DskipTests
+        run: chmod +x ./mvnw && ./mvnw clean verify
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -44,3 +44,4 @@ jobs:
           file: ./demo-identity-service/Dockerfile
           push: true
           tags: vothanhthienlong/demo-identity-service:latest
+
