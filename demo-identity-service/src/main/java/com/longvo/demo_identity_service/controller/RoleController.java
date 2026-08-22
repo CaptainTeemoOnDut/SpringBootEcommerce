@@ -40,3 +40,10 @@ public class RoleController {
         return ApiResponse.<Void>builder().build();
     }
 }
+
+/*
+docker compose build --no-cache identity-service
+docker compose up -d
+docker compose ps
+docker compose logs -f identity-service
+*/
