@@ -1,4 +1,4 @@
-name: CI identity
+name: CI
 
 on:
   push:
@@ -24,6 +24,7 @@ jobs:
           java-version: '21'
           cache: maven
 
+
       - name: Build with Maven
         working-directory: ./demo-identity-service
         run: chmod +x ./mvnw && ./mvnw clean verify
@@ -40,8 +41,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./demo-identity-service
+          file: ./demo-identity-service/Dockerfile
           push: true
           tags: vothanhthienlong/demo-identity-service:latest
 

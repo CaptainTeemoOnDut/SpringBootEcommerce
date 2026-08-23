@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
         name = "product_variation_option_media",
         indexes = {
                 //@Index(name = "idx_media_product", columnList = "product_id"),
-                @Index(name = "idx_media_public_id", columnList = "public_id"),
-                @Index(name = "idx_media_type_status", columnList = "type, status")
+                @Index(name = "idx_pvom_media_public_id", columnList = "public_id"),
+                @Index(name = "idx_pvom_media_type_status", columnList = "type, status")
         }
 )
 public class ProductVariationOptionMedia {
