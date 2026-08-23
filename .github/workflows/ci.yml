@@ -24,12 +24,6 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Debug test environment
-        working-directory: ./demo-identity-service
-        run: |
-          echo "DBMS_CONNECTION=${DBMS_CONNECTION}"
-          echo "REDIS_URL=${REDIS_URL}"
-          echo "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}"
 
       - name: Build with Maven
         working-directory: ./demo-identity-service
