@@ -1,0 +1,22 @@
+services:
+
+  # =========================
+  # API Gateway
+  # =========================
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: api-gateway:latest
+
+    container_name: api-gateway
+
+    restart: unless-stopped
+
+    ports:
+      - "8888:8888"
+
+    environment:
+      IDENTITY_SERVICE_URL: http://host.docker.internal:8443/identity
+      CHAT_SERVICE_URL: http://host.docker.internal:8085/chat
