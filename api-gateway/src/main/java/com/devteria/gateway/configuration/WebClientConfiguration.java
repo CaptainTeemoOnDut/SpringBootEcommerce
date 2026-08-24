@@ -1,6 +1,7 @@
 package com.devteria.gateway.configuration;
 
 import com.devteria.gateway.repository.IdentityClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -14,32 +15,39 @@ import java.util.List;
 
 @Configuration
 public class WebClientConfiguration {
+
     @Bean
-    WebClient webClient(){
+    WebClient webClient(
+            @Value("${app.services.identity.url}") String identityServiceUrl
+    ) {
         return WebClient.builder()
-                .baseUrl("http://localhost:8443/identity")
+                .baseUrl(identityServiceUrl)
                 .build();
     }
 
     @Bean
-    CorsWebFilter corsWebFilter(){
+    CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
+
         corsConfiguration.setAllowedOrigins(List.of("*"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
 
-        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
 
-        return new CorsWebFilter(urlBasedCorsConfigurationSource);
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsWebFilter(source);
     }
 
     @Bean
-    IdentityClient identityClient(WebClient webClient){
-        HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
-                .builderFor(WebClientAdapter.create(webClient)).build();
+    IdentityClient identityClient(WebClient webClient) {
+        HttpServiceProxyFactory factory =
+                HttpServiceProxyFactory
+                        .builderFor(WebClientAdapter.create(webClient))
+                        .build();
 
-        return httpServiceProxyFactory.createClient(IdentityClient.class);
+        return factory.createClient(IdentityClient.class);
     }
-
 }
