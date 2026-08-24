@@ -8,36 +8,26 @@ spring:
     name: chat-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/mydb
+      uri: ${MONGODB_URI:mongodb://localhost:27017/mydb}
       auto-index-creation: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/vector_db
-    username: postgres
-    password: 123456
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/vector_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
 
-  # 🔵 PostgreSQL riêng cho VECTOR
+
   ai:
     openai:
       api-key: ${GEMINI_KEY}
       chat:
-        #base-url: https://generativelanguage.googleapis.com
-        #base-url: https://generativelanguage.googleapis.com/v1beta
         base-url: https://generativelanguage.googleapis.com/v1beta/openai
-        #completions-path: /v1beta/openai/chat/completions
-        #completions-path: /openai/chat/completions
-        #completions-path: /chat/completions
         options:
           model: gemini-2.5-flash-lite
-          #model: gemini-1.5-flash
 
       embedding:
-        #base-url: https://generativelanguage.googleapis.com
-        #base-url: https://generativelanguage.googleapis.com/v1beta
         base-url: https://generativelanguage.googleapis.com/v1beta/openai
-        #embeddings-path: /openai/embeddings
-        #embeddings-path: /embeddings
         embeddings-path: /embeddings
         options:
           model: gemini-embedding-001
@@ -50,9 +40,9 @@ spring:
         table-name: vector_store
         initialize-schema: true
         datasource:
-          url: jdbc:postgresql://localhost:5432/vector_db
-          username: postgres
-          password: 123456
+          url: ${VECTOR_DB_CONNECTION:jdbc:postgresql://localhost:5432/vector_db}
+          username: ${VECTOR_DB_USERNAME:postgres}
+          password: ${VECTOR_DB_PASSWORD:123456}
           driver-class-name: org.postgresql.Driver
 logging:
   level:
@@ -61,6 +51,6 @@ logging:
 app:
   services:
     profile:
-      url: http://localhost:8443/identity
+      url: ${PROFILE_SERVICE_URL:http://localhost:8443/identity}
     identity:
-      url: http://localhost:8443/identity
+      url: ${IDENTITY_SERVICE_URL:http://localhost:8443/identity}

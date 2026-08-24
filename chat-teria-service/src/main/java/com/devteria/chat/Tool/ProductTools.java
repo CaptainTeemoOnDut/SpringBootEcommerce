@@ -1,20 +1,19 @@
 package com.devteria.chat.Tool;
 
-import com.devteria.chat.dto.ApiResponse;
-import com.devteria.chat.dto.response.ProductResponse;
-import com.devteria.chat.repository.httpclient.ProductClient;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.devteria.chat.dto.ApiResponse;
+import com.devteria.chat.dto.response.ProductResponse;
+import com.devteria.chat.repository.httpclient.ProductClient;
 
 @Component
 public class ProductTools {
 
     private final ProductClient productClient;
 
-    public ProductTools( ProductClient productClient) {
+    public ProductTools(ProductClient productClient) {
         this.productClient = productClient;
     }
 
@@ -25,8 +24,8 @@ public class ProductTools {
 
     /*@Tool(description = "Get stock of a product by id")
     public int getStock(Long productId) {
-        return productRepository.findById(productId)
-                .map(Product::getStock)
-                .orElse(0);
+    	return productRepository.findById(productId)
+    			.map(Product::getStock)
+    			.orElse(0);
     }*/
 }

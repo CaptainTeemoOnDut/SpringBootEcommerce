@@ -1,39 +1,117 @@
-version: '3.8'
-
 services:
-  # --- MongoDB ---
+
+  # =========================
+  # MongoDB
+  # =========================
   mongodb:
     image: mongo:latest
     container_name: my-mongo
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
       - ./mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-  # --- UI cho MongoDB ---
+  # =========================
+  # Mongo Express
+  # =========================
   mongo-express:
     image: mongo-express:latest
     container_name: my-mongo-express
-    restart: always
+    restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_SERVER: mongodb
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
 
-  # --- PostgreSQL (pgVector) ---
+  # =========================
+  # PostgreSQL + pgVector
+  # =========================
   db:
     image: pgvector/pgvector:pg16
     container_name: postgres_vector_container
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=vector_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456
+      POSTGRES_DB: vector_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vector_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # =========================
+  # Chat Service
+  # =========================
+  chat-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: chat-service:latest
+    container_name: chat-service
+
+    restart: unless-stopped
+
+    ports:
+      - "8085:8085"
+      - "8099:8099"
+
+    environment:
+
+      # =========================
+      # Gemini
+      # =========================
+      GEMINI_KEY: ${GEMINI_KEY}
+
+      # =========================
+      # MongoDB
+      # =========================
+      MONGODB_URI: mongodb://mongodb:27017/mydb
+
+      # =========================
+      # PostgreSQL
+      # =========================
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/vector_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123456
+
+      # =========================
+      # Vector DB
+      # =========================
+      VECTOR_DB_CONNECTION: jdbc:postgresql://db:5432/vector_db
+      VECTOR_DB_USERNAME: postgres
+      VECTOR_DB_PASSWORD: 123456
+
+      # =========================
+      # Identity Service
+      # =========================
+      IDENTITY_SERVICE_URL: http://host.docker.internal:8443/identity
+
+      # Nếu sau này Identity Service cũng chạy
+      # trong cùng Docker network thì đổi thành:
+      #
+      # IDENTITY_SERVICE_URL: http://demo-identity-service:8443/identity
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+      db:
+        condition: service_healthy
