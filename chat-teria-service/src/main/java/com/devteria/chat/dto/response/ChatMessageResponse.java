@@ -1,11 +1,12 @@
 package com.devteria.chat.dto.response;
 
+import java.time.Instant;
+
 import com.devteria.chat.entity.ParticipantInfo;
 import com.devteria.chat.enums.ChatMessageStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 
 @Data
 @Builder

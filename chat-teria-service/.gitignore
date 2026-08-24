@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Docker local database data
+mongo-data/
+postgres_data/
+mysql_data/
+
+# Docker / local socket files
+*.sock
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
