@@ -5,10 +5,10 @@ server:
 
 spring:
   datasource:
-    url: ${DBMS_CONNECTION}
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/demo_identity_service?createDatabaseIfNotExist=true&useSSL=false}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DBMS_USERNAME}
-    password: ${DBMS_PASSWORD}
+    username: ${DBMS_USERNAME:root}
+    password: ${DBMS_PASSWORD:root}
 
   jpa:
     hibernate:
@@ -27,32 +27,32 @@ spring:
 
   data:
     redis:
-      url: ${REDIS_URL}
+      url: ${REDIS_URL:redis://localhost:6379}
 
 google:
-  client-id: ${GOOGLE_CLIENT_ID}
-  client-secret: ${GOOGLE_CLIENT_SECRET}
+  client-id: ${GOOGLE_CLIENT_ID:dummy_google_client_id}
+  client-secret: ${GOOGLE_CLIENT_SECRET:dummy_google_client_secret}
   redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:4200/authenticate}
 
 jwt:
-  signerKey: ${JWT_SIGNER_KEY}
+  signerKey: ${JWT_SIGNER_KEY:1234567890123456789012345678901234567890123456789012345678901234}
   valid-duration: ${JWT_VALID_DURATION:60}
   ttl: ${JWT_TTL:7d}
   issuer: ${JWT_ISSUER:longvo}
 
 cloudinary:
-  cloud_name: ${CLOUDINARY_CLOUD_NAME}
-  api_key: ${CLOUDINARY_API_KEY}
-  api_secret: ${CLOUDINARY_API_SECRET}
+  cloud_name: ${CLOUDINARY_CLOUD_NAME:dummy_cloud_name}
+  api_key: ${CLOUDINARY_API_KEY:123456789}
+  api_secret: ${CLOUDINARY_API_SECRET:dummy_api_secret}
 
 app:
-  frontend-url: ${FRONTEND_URL:}
-  frontend-success-path: ${FRONTEND_SUCCESS_PATH:}
+  frontend-url: ${FRONTEND_URL:http://localhost:4200}
+  frontend-success-path: ${FRONTEND_SUCCESS_PATH:/success}
   services:
     chat: ${CHAT_SERVICE_URL:http://localhost:8085/chat}
 
 vnpay:
-  tmnCode: ${VNPAY_TMN_CODE}
-  hashSecret: ${VNPAY_HASH_SECRET}
+  tmnCode: ${VNPAY_TMN_CODE:DEMO1234}
+  hashSecret: ${VNPAY_HASH_SECRET:DEMOHASHSECRET1234567890ABCDEF}
   payUrl: ${VNPAY_PAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
   returnUrl: ${VNPAY_RETURN_URL:http://localhost:4200/payment/result}

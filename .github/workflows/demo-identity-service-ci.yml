@@ -40,11 +40,7 @@ jobs:
         working-directory: ./demo-identity-service
         # 2. Truyền biến môi trường REDIS_URL kết nối tới Redis service vừa tạo ở trên
         env:
-          REDIS_URL: ${{ secrets.REDIS_URL }}
-          VNP_TMN_CODE: ${{ secrets.VNP_TMN_CODE }}
-          VNP_HASH_SECRET: ${{ secrets.VNP_HASH_SECRET }}
-          VNPAY_PAY_URL: ${{ secrets.VNPAY_PAY_URL }}
-          VNPAY_RETURN_URL: ${{ secrets.VNPAY_RETURN_URL }}
+          REDIS_URL: redis://localhost:6379
         run: chmod +x ./mvnw && ./mvnw clean verify
 
       - name: Set up Docker Buildx
