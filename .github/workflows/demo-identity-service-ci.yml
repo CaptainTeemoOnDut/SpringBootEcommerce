@@ -1,17 +1,16 @@
-name: API Gateway CI
+name: CI
 
 on:
   push:
     branches:
       - main
-      - githubaction
   pull_request:
     branches:
       - main
 
 jobs:
   build:
-    name: Build API Gateway
+    name: Build Spring Boot Application
     runs-on: ubuntu-latest
 
     steps:
@@ -25,8 +24,9 @@ jobs:
           java-version: '21'
           cache: maven
 
+
       - name: Build with Maven
-        working-directory: ./api-gateway
+        working-directory: ./demo-identity-service
         run: chmod +x ./mvnw && ./mvnw clean verify
 
       - name: Set up Docker Buildx
@@ -41,7 +41,23 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: ./api-gateway
-          file: ./api-gateway/Dockerfile
+          context: ./demo-identity-service
+          file: ./demo-identity-service/Dockerfile
           push: true
-          tags: vothanhthienlong/api-gateway:latest
+          tags: vothanhthienlong/demo-identity-service:latest
+
+      - name: Deploy Identity Service to EC2
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/ecommerce
+
+            docker compose -f docker-compose.prod.yml pull identity-service
+
+            docker compose -f docker-compose.prod.yml up -d identity-service
+
+            docker image prune -f
+
