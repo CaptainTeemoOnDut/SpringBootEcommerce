@@ -67,13 +67,6 @@ public class UserService {
         User user = userMapper.toUse(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setIsActive(true);
-        List<String> ids = new ArrayList<>();
-        ids.add("Vo Long");
-        ids.add("New Vo Long");
-        /*ConversationRequest requestConversation = new ConversationRequest();
-        requestConversation.setType("haha");
-        requestConversation.setParticipantIds(ids);
-        chatClient.createConversation(requestConversation);*/
 
         HashSet<Role> roles = new HashSet<>();
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
@@ -145,13 +138,14 @@ public class UserService {
         return user;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
+    //@PreAuthorize("hasRole('ADMIN')") TẠM COMMENT
     public UserResponse getUser(Long id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }

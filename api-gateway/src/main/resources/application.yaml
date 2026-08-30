@@ -6,10 +6,10 @@ app:
 
   services:
     identity:
-      url: ${IDENTITY_SERVICE_URL:http://localhost:8443/identity}
+      url: ${IDENTITY_SERVICE_URL}
 
     chat:
-      url: ${CHAT_SERVICE_URL:http://localhost:8085/chat}
+      url: ${CHAT_SERVICE_URL}
 
 spring:
   application:
@@ -19,14 +19,14 @@ spring:
     gateway:
       routes:
         - id: demo_identity_service
-          uri: ${IDENTITY_SERVICE_URL:http://localhost:8443/identity}
+          uri: ${IDENTITY_SERVICE_URL}
           predicates:
             - Path=${app.api-prefix}/identity/**
           filters:
             - StripPrefix=2
 
         - id: chat_service
-          uri: ${CHAT_SERVICE_URL:http://localhost:8085/chat}
+          uri: ${CHAT_SERVICE_URL}
           predicates:
             - Path=${app.api-prefix}/chat/**
           filters:

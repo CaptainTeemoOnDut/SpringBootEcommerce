@@ -17,6 +17,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - chat-network
 
   # =========================
   # Mongo Express
@@ -55,6 +57,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - chat-network
 
   # =========================
   # Chat Service
@@ -115,3 +119,8 @@ services:
 
       db:
         condition: service_healthy
+    networks:
+      - chat-network
+networks:
+  chat-network:
+    driver: bridge
