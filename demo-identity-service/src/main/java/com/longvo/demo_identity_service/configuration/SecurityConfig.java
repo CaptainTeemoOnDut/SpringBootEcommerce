@@ -28,28 +28,22 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_POST_METHOD_ENDPOINTS = {
-            "/users/create",
-            "/users/create-password",
-            "/auth/**",
-            "/media/**"
-    };
-
-    private final String[] PUBLIC_GET_METHOD_ENDPOINTS = {
-            "/products/all",
-            "/products/search",
-            "/products/category",
-            "/products/product/**",
-            "/products/variants/**",
-            "/products/shop/**",
-            "/products/product_card",
-            "/products/product_card",
+            "/products/**",
             "/users/**",
             "/reviews/**",
             "/auth/**",
             "/product-categories/**"
     };
 
-    @Autowired
+    private final String[] PUBLIC_GET_METHOD_ENDPOINTS = {
+            "/products/**",
+            "/users/**",
+            "/reviews/**",
+            "/auth/**",
+            "/product-categories/**"
+    };
+
+
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean

@@ -8,13 +8,13 @@ spring:
     name: chat-service
   data:
     mongodb:
-      uri: ${MONGODB_URI:mongodb://localhost:27017/mydb}
+      uri: ${MONGODB_URI}
       auto-index-creation: true
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/vector_db}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
 
@@ -40,9 +40,9 @@ spring:
         table-name: vector_store
         initialize-schema: true
         datasource:
-          url: ${VECTOR_DB_CONNECTION:jdbc:postgresql://localhost:5432/vector_db}
-          username: ${VECTOR_DB_USERNAME:postgres}
-          password: ${VECTOR_DB_PASSWORD:123456}
+          url: ${VECTOR_DB_CONNECTION}
+          username: ${VECTOR_DB_USERNAME}
+          password: ${VECTOR_DB_PASSWORD}
           driver-class-name: org.postgresql.Driver
 logging:
   level:
